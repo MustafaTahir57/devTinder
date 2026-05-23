@@ -98,7 +98,6 @@ authRouter.post("/forgetPassword", async (req, res) => {
 })
 
 authRouter.post("/reset-password/:token", async (req, res) => {
-    console.log("req.body", req.body)
     try {
         const { token } = req.params;
         const { newPassword } = req.body;

@@ -33,19 +33,13 @@ requestRouter.post("/request/send/:status/:userId", userAuth, async (req, res) =
             return res.status(409).json({ message: "Connection already exists" });
         }
 
-        console.log("connectionAlreadyExist", connectionAlreadyExist)
-
         const newConnection = new ConnectionModel({
             fromUserId,
             toUserId,
             status
         });
 
-        console.log("newConnection", newConnection)
-
         const data = await newConnection.save();
-
-        console.log("data", data)
 
         return res.status(201).json({
             message: "Connection request sent",

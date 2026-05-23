@@ -19,9 +19,7 @@ app.use("/", userRouter)
 
 
 connectDB().then(() => {
-    console.log("Database connection done")
     app.listen(7777, () => {
-        console.log("Server Running")
     });
 }).catch((err) => {
     console.error("Connection Failed", err)
