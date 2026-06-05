@@ -4,39 +4,54 @@ const profileRouter = express.Router();
 const { userAuth } = require("../middlewares/auth")
 const { validateEditProfileData } = require("../utils/validation.js")
 const User = require("../models/user")
+const upload = require("../middlewares/upload.js")
+const uploadToCloudinary = require("../utils/uploadToCloudinary");
 
 profileRouter.get("/profile", userAuth, async (req, res) => {
     try {
         const user = req.user;
-        res.send("Reading Cookie" + user)
+        res.json(user);
     } catch (err) {
         res.status(400).send("ERROR : " + err.message)
     }
 })
 
-profileRouter.post("/profile/edit", userAuth, async (req, res) => {
+profileRouter.post("/profile/edit", userAuth, upload.single("profilePicture"), async (req, res) => {
     try {
         if (!validateEditProfileData(req)) {
-            throw new Error("Invalid Update")
+            throw new Error("Invalid Update Fields");
         }
-
         const loggedInUser = req.user;
 
-        Object.keys(req.body).forEach((key) => (loggedInUser[key] = req.body[key]))
+        if (req.file) {
+            const uploadedImage = await uploadToCloudinary(req.file.buffer);
+
+            loggedInUser.profilePicture = uploadedImage.secure_url;
+        }
+
+        Object.keys(req.body).forEach((key) => {
+            if (key === "socialLinks") {
+                loggedInUser.socialLinks = {
+                    ...loggedInUser.socialLinks,
+                    ...JSON.parse(req.body.socialLinks)
+                };
+            } else if (key === "skills") {
+                loggedInUser.skills = JSON.parse(req.body.skills);
+            } else {
+                loggedInUser[key] = req.body[key];
+            }
+        });
 
         await loggedInUser.save();
 
         res.json({
             message: `${loggedInUser.firstName}, your profile updated`,
             data: loggedInUser
-        })
-
+        });
 
     } catch (err) {
-        res.status(400).send("ERROR : " + err.message)
+        res.status(400).send("ERROR: " + err.message);
     }
-})
-
-
+});
 
 module.exports = profileRouter;

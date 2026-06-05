@@ -7,51 +7,95 @@ const userSchema = new mongoose.Schema({
     firstName: {
         type: String,
         required: true,
+        trim: true,
     },
     lastName: {
         type: String,
+        trim: true,
     },
+
     emailId: {
         type: String,
         required: true,
         unique: true,
         trim: true,
         lowercase: true,
-
         validate(value) {
             if (!validator.isEmail(value)) {
-                throw new Error("Invalid email address: " + value)
+                throw new Error("Invalid email address: " + value);
             }
         }
     },
+
     password: {
         type: String,
     },
+
     age: {
         type: Number,
         default: 21,
         min: 18
     },
+
     gender: {
         type: String,
         validate(value) {
-            if (!["male", "female"].includes(value)) {
-                throw new Error("Gender invalid!")
+            if (value && !["male", "female", "non-binary"].includes(value)) {
+                throw new Error("Gender invalid!");
             }
-
         }
     },
+
     skills: {
-        type: [String]
+        type: [String],
+        default: []
     },
+
+    // =========================
+    // NEW PROFILE FIELDS
+    // =========================
+
+    profilePicture: {
+        type: String, // URL of avatar
+        default: ""
+    },
+
+    headline: {
+        type: String, // e.g. "Senior Full-Stack Engineer"
+        default: ""
+    },
+
+    bio: {
+        type: String,
+        default: ""
+    },
+
+    location: {
+        type: String, // e.g. "Berlin, DE"
+        default: ""
+    },
+
+    role: {
+        type: String, // e.g. "Developer"
+        default: "User"
+    },
+
+    socialLinks: {
+        github: { type: String, default: "" },
+        linkedin: { type: String, default: "" },
+        twitter: { type: String, default: "" },
+        portfolio: { type: String, default: "" }
+    },
+
     resetToken: {
         type: String,
     },
+
     resetTokenExpiry: {
         type: Date
     }
 
-}, { timestamps: true })
+}, { timestamps: true });
 
 userSchema.index({ email: 1 })  // Indexing email in ascending order it will make a copy of this field
 
