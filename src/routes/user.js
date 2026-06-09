@@ -11,7 +11,7 @@ userRouter.get("/user/requests/received", userAuth, async (req, res) => {
         const pendingRequets = await ConnectionRequestModel.find({
             toUserId: loggedInUser._id,
             status: "interested"
-        }).populate("fromUserId", "firstName age -_id").exec();
+        }).populate("fromUserId", ["firstName", "lastName", "gender", "age", "profilePicture", "skills", "headline"]).exec();
 
         if (!pendingRequets) {
             return res.status(404).send("No pending requests")
@@ -37,7 +37,8 @@ userRouter.get("/user/connections", userAuth, async (req, res) => {
                 { fromUserId: loggedInUser._id, status: "accepted" },
                 { toUserId: loggedInUser._id, status: "accepted" }
             ]
-        }).populate("fromUserId", ["firstName", "lastName", "gender", "age"]).populate("toUserId", ["firstName", "lastName", "gender", "age"])
+        }).populate("fromUserId", ["firstName", "lastName", "gender", "age", "profilePicture"])
+            .populate("toUserId", ["firstName", "lastName", "gender", "age", "profilePicture"]);
 
         if (!connections) {
             return res.status(404).send("No pending requests")
@@ -69,8 +70,6 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
         limit = limit > 50 ? 50 : limit;
         const skip = (page - 1) * limit;
 
-        console.log("page", req.query)
-
         const connectionRequests = await ConnectionRequestModel.find({
             $or: [
                 { fromUserId: loggedInUser._id },
@@ -91,7 +90,7 @@ userRouter.get("/user/feed", userAuth, async (req, res) => {
                 { _id: { $nin: Array.from(hideUsers) } },
                 { _id: { $ne: loggedInUser._id } }
             ]
-        }).select("firstName lastName gender age").skip(skip)
+        }).select("firstName lastName gender age profilePicture , headline , bio").skip(skip)
             .limit(limit);
 
         res.json({
