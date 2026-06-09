@@ -87,6 +87,11 @@ const userSchema = new mongoose.Schema({
         portfolio: { type: String, default: "" }
     },
 
+    lastSeen: {
+        type: Date,
+        default: null,
+    },
+
     resetToken: {
         type: String,
     },
