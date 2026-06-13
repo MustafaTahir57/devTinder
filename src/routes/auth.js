@@ -70,8 +70,11 @@ authRouter.post("/signup", upload.single("profilePicture"),
 
             await user.save();
 
+            const token = await user.getJWT()
+
             res.status(201).json({
                 message: "User created successfully",
+                token,
                 user: {
                     _id: user._id,
                     firstName: user.firstName,
@@ -119,7 +122,8 @@ authRouter.post("/signIn", async (req, res) => {
             });
             res.json({
                 message: "Login Success",
-                user
+                user,
+                token
             })
         } else {
             throw new Error("Password Invalid")

@@ -52,7 +52,7 @@ const initSocket = (server) => {
     io.use(async (socket, next) => {
         try {
             const cookies = cookie.parse(socket.handshake.headers.cookie || "");
-            const token = cookies.token;
+            const token = cookies.token || socket.handshake.auth.token
 
             if (!token) {
                 return next(new Error("Authentication error: No token"));

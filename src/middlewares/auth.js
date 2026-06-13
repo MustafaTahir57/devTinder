@@ -4,7 +4,7 @@ const User = require("../models/user")
 
 const userAuth = async (req, res, next) => {
     try {
-        const { token } = req.cookies;
+        const token = req.cookies?.token || req.headers.authorization?.replace("Bearer ", "")
 
         if (!token) {
             return res.status(401).json({ message: "Invalid Session" });
