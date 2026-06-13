@@ -43,7 +43,7 @@ const initSocket = (server) => {
 
     const io = new Server(server, {
         cors: {
-            origin: "http://localhost:8080",
+            origin: process.env.WHITE_LIST_URL,
             credentials: true,
         },
     });

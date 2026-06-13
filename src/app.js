@@ -16,7 +16,7 @@ const app = express();
 const server = http.createServer(app);
 
 app.use(cors({
-    origin: "http://localhost:8080",
+    origin: process.env.WHITE_LIST_URL,
     credentials: true,
 }));
 app.use(express.json());
